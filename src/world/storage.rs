@@ -1,6 +1,6 @@
 use crate::blocks::{BlockEntity, BlockPos};
 use crate::network::packets::clientbound::{
-    C3BMultiBlockChangeRecord, CChunkData, CChunkDataSection, CMultiBlockChange, ClientBoundPacket,
+    CMultiBlockChangeRecord, CChunkData, CChunkDataSection, CMultiBlockChange, ClientBoundPacket,
 };
 use crate::network::packets::PacketEncoder;
 use serde::{Deserialize, Serialize};
@@ -217,7 +217,7 @@ impl Default for PalettedBitBuffer {
 pub struct ChunkSection {
     buffer: PalettedBitBuffer,
     block_count: u32,
-    multi_block: Vec<C3BMultiBlockChangeRecord>,
+    multi_block: Vec<CMultiBlockChangeRecord>,
 }
 
 impl ChunkSection {
@@ -416,7 +416,7 @@ impl Chunk {
         if changed {
             let section_y = (y >> 4) as u8;
             self.sections.get_mut(&section_y).unwrap().multi_block.push(
-                C3BMultiBlockChangeRecord {
+                CMultiBlockChangeRecord {
                     block_id,
                     x: x as u8,
                     y: y as u8 & 0xF,
