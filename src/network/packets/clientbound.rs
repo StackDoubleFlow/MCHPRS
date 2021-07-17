@@ -336,6 +336,32 @@ impl ClientBoundPacket for CWindowItems {
     }
 }
 
+pub struct CSetSlot {
+    pub slot: i16,
+    pub slot_data: Option<SlotData>,
+}
+
+impl ClientBoundPacket for CSetSlot {
+    fn encode(self) -> PacketEncoder {
+        let mut buf = Vec::new();
+        buf.write_byte(0);
+        buf.write_short(self.slot);
+        if let Some(slot) = self.slot_data {
+            buf.write_bool(true);
+            buf.write_varint(slot.item_id);
+            buf.write_byte(slot.item_count);
+            if let Some(nbt) = slot.nbt {
+                buf.write_nbt_blob(nbt);
+            } else {
+                buf.write_byte(0); // End tag
+            }
+        } else {
+            buf.write_bool(false);
+        }
+        PacketEncoder::new(buf, 0x15)
+    }
+}
+
 pub struct CPluginMessage {
     pub channel: String,
     pub data: Vec<u8>,

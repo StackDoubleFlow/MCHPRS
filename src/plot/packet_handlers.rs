@@ -68,6 +68,28 @@ impl ServerBoundPacketHandler for Plot {
         } else {
             self.players[player].inventory[creative_inventory_action.slot as usize] = None;
         }
+
+        // We wanna retrieve the item slot from the inventory
+        // rather than re-using the value from the client,
+        // to avoid getting out of sync if the server validates
+        // or sanitizes data or something
+        let slot_data = match &self.players[player].inventory[creative_inventory_action.slot as usize] {
+            Some(stack) => Some(SlotData {
+                item_id: stack.item_type.get_id() as i32,
+                item_count: stack.count as i8,
+                nbt: stack.nbt.clone(),
+            }),
+            None => None,
+        };
+
+        let set_slot = CSetSlot {
+            slot: creative_inventory_action.slot,
+            slot_data,
+        }
+        .encode();
+        self.players[player]
+            .client
+            .send_packet(&set_slot);
     }
 
     fn handle_player_abilities(&mut self, player_abilities: SPlayerAbilities, player: usize) {

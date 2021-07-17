@@ -432,6 +432,7 @@ impl ServerBoundPacket for SCreativeInventoryAction {
         } else {
             None
         };
+
         Ok(SCreativeInventoryAction { slot, clicked_item })
     }
 
